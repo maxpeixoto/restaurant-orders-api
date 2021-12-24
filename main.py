@@ -1,16 +1,11 @@
 from flask import Flask
-app = Flask(__name__)
-application=app
+application = Flask(__name__)
 
-
-@app.route('/')
+@application.route('/')
 def hello_world():
     return 'Hello World'
 
 
-@app.route('/restaurant')
+@application.route('/restaurant')
 def restaurant():
   return "many restaurants"
-
-if __name__ == '__main__':
-    app.run()
