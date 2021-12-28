@@ -1,14 +1,13 @@
 import mysql.connector
-#TODO update requirements.txt
+import os
 
 
 def connect():
         return mysql.connector.connect(
-            # TODO use ENV
-            host="",
-            user="",
-            password="",
-            database=""
+            host=os.environ['RDS_HOSTNAME'],
+            user=os.environ['RDS_USERNAME'],
+            password=os.environ['RDS_PASSWORD'],
+            database=os.environ['RDS_DB_NAME']
         )
 
 
