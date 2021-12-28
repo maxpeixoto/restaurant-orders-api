@@ -81,7 +81,7 @@ def pay(rest_id, table_id):
     bill = data_access.get_bill()
     if content["pay"] is not bill:
         return "Conflict", 409
-    data_access.pay(rest_id, table_id, bill)
+    data_access.pay(rest_id, table_id)
     return "Accepted", 202
 
 

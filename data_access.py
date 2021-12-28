@@ -8,35 +8,65 @@ def list_restaurants():
 
 
 def add_restaurant(name):
-    db.run(f"insert into restaurants (name) values ('{name}')")
+    db.run("""
+        insert into restaurants (name)
+        values (%s)
+        """, (name,))
     return
 
 
 def get_menu(restaurant_id):
-    menu = db.run(f"select name, price from items where restaurant_id = '{restaurant_id}'")
+    menu = db.run("""
+        select name, price
+        from items
+        where restaurant_id = %s
+        """, (restaurant_id,))
     return [{"name": name, "price": price} for (name, price) in menu]
 
 
 def add_item_to_menu(restaurant_id, name, price):
-    db.run(f"insert into items (restaurant_id, name, price) values ('{restaurant_id}', '{name}', '{price}')")
+    db.run("""
+        insert into items (restaurant_id, name, price)
+        values (%s, %s, %s)
+        """, (restaurant_id,name,price))
     return
 
 
 def list_ordered_items(restaurant_id, table_id):
-    items = db.run(f"select i.name as name, o.creation_time as creation_time from orders o left join items i on i.id = o.item_id where o.restaurant_id = '{restaurant_id}' and o.table_id = '{table_id}'")
+    items = db.run("""
+        select i.name as name, o.creation_time as creation_time
+        from orders o
+        left join items i on i.id = o.item_id
+        where o.restaurant_id = %s
+        and o.table_id = %s
+        and o.is_paid = false
+        """,(restaurant_id,table_id))
     return [{"name": name, "creation_time": creation_time} for (name, creation_time) in items
 ]
 
 
 def order_item(restaurant_id, table_id, item_id):
-    db.run(f"insert into orders (restaurant_id, table_id, item_id) values ('{restaurant_id}', '{table_id}', '{item_id}')")
+    db.run("""
+        insert into orders (restaurant_id, table_id, item_id)
+        values (%s, %s, %s)
+        """,(restaurant_id,table_id,item_id))
     return
 
 def get_bill(restaurant_id, table_id):
-    amount = db.run(f"select sum(i.price) from orders o left join items i on i.id = o.item_id where o.is_paid = FALSE and o.restaurant_id = {restaurant_id} and o.table_id = {table_id}")
+    amount = db.run("""select sum(i.price)
+    from orders o left join items i on i.id = o.item_id
+    where o.is_paid = FALSE
+    and o.restaurant_id = %s
+    and o.table_id = %s
+    """,(restaurant_id,table_id))
     return amount
 
 
-def pay(restaurant_id, table_id, bill):
-    db.run(f"update orders set is_paid = true where restaurant_id = {restaurant_id} and table_id = {table_id}")
+def pay(restaurant_id, table_id):
+    db.run("""
+    update orders
+    set is_paid = true
+    where restaurant_id = %s
+    and table_id = %s
+    """,(restaurant_id,table_id))
     return

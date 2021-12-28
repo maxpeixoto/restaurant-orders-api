@@ -14,14 +14,14 @@ def connect():
 db = connect()
 
 
-def run(query):
+def run(query, *args):
     global db
     if not db or not db.is_connected():
         db = connect()
     cursor = db.cursor()
     print("running query:")
     print(query)
-    cursor.execute(query)
+    cursor.execute(query, *args)
     rv = cursor.fetchall()
     db.commit()
     return rv
